@@ -9,6 +9,7 @@ export async function getServiceDefinitionsFromRemoteEndpoint({
   serviceList,
   headers = {},
   serviceSdlCache,
+  
 }: {
   serviceList: {
     name: string;
@@ -63,14 +64,10 @@ export async function getServiceDefinitionsFromRemoteEndpoint({
         throw new Error(errors?.map(e => e.message).join("\n"));
       })
       .catch(err => {
-        const errorMessage =
-          `Couldn't load service definitions for "${name}" at ${url}` +
-          (err && err.message ? ": " + err.message || err : "");
-
-        throw new Error(errorMessage);
+        return null;
       });
   });
 
-  const serviceDefinitions = await Promise.all(promiseOfServiceList);
+  const serviceDefinitions = (await Promise.all(promiseOfServiceList)).filter(service => service !== null);
   return { serviceDefinitions, isNewSchema }
 }
